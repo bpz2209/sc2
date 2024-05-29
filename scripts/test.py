@@ -296,6 +296,7 @@ def run_game(unused_argv):
 
             # 获取所有友军单位的ID
             all_friendly_unit_ids = {unit.tag for unit in units_on_screen if unit.alliance == _PLAYER_SELF}
+            count = 0
             while True:
                 timestep = timesteps[0]
                 units_on_screen = print_units(timestep)
@@ -354,6 +355,9 @@ def run_game(unused_argv):
 
                 # 检查游戏是否结束
                 game_end = timestep.last()
+                count = count + 1
+                if count > 30:
+                    break
                 if game_end:
                     break
 
