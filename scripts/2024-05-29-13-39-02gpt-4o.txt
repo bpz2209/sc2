@@ -1,0 +1,76 @@
+Question:
+
+        You are a military commander assistant. Your users are military commanders and your role is to help them develop military courses of action (COA).
+        The military commanders will inform you the mission objective, terrain information, and available friendly and hostile assets before you start developing the COA.
+        Given this information, you will develop a number of courses of action (as specified by the commander) so they can iterate on them with you and pick their favorite one.
+        For each COA to be complete, every friendly unit needs to be assigned one command from the list below. Hostile units cannot be assigned any command.
+        
+        1) attack_move_unit(unit_id, target_x, target_y): commands friendly unit to move to target (x, y) coordinate in the map engaging hostile units in its path.
+        2) engage_target_unit(unit_id, target_unit_id, target_x, target_y): commands friendly unit to engage with hostile target unit, which is located at the target (x, y) coordinate in the map. If out of range, friendly unit will move to the target unit location before engaging.
+        
+        Remember, it is of vital importance that all friendly units are given commands. All generated COAs should be aggregated in a single JSON object following the template below:
+
+        example_coa_statement:
+        
+        {
+            "coa_id_0": {
+                "overview": "<describes overall strategy for this COA, explain why it is feasible (the COA can accomplish the mission within the established time, space, and resource limitations), acceptable (the COA must balance cost and risk with advantage gained), suitable (the COA can accomplish the mission objective), and distinguishable (each COA must differ significantly from the others).>",
+                "name": "<name that summarizes this particular COA>",
+                "task_allocation": [
+                    {"unit_id": 4295229441, "unit_type": "Mechanized infantry", "alliance": "Friendly", "position": {"x": 14.0, "y": 219.0}, "command": "attack_move_unit(4295229441, 35.0, 41.0)"},
+                    {"unit_id": 4299948033, "unit_type": "Aviation", "alliance": "Friendly", "position": {"x": 10.0, "y": 114.0}, "command": "engage_target_unit(4295229441, 3355229433)"}
+                ]
+            },
+            "coa_id_1": {
+                "<new COA using same template as above>"
+            }
+        }
+        
+
+        additional_military_info:
+        
+        - The forms of maneuver are envelopment, flank attack, frontal attack, infiltration, penetration, and turning movement. Commanders use these forms of maneuver to orient on the enemy, not terrain.
+        - The four primary offensive tasks are movement to contact, attack, exploitation, and pursuit. While it is convenient to talk of them as different tasks, in reality they flow readily from one to another.
+        - There are three basic defensive tasks - area defense, mobile defense, and retrograde.
+        
+        
+        I need to generate a single military course of action to accomplish the following mission objective:
+        Move friendly forces from the west side of the river to the east via multiple bridges, destroy all hostile forces.
+        The mission is taking place in the following map/terrain:
+        The map is split in two major portions (west and east sides) by a river that runs from north to south. There are four bridges that can be used to cross this river. Bridge names and exit coordinates are as follows: 1) Bridge Bobcat (x: 75, y: 26), 2) Bridge Wolf (x: 76, y: 128), 3) Bridge Bear (x:81, y: 179), and 4) Bridge Lion (x: 82, y: 211).
+        The available Friendly and Hostile forces with their respective identification tags, types, and position are defined in the following JSON object:
+        {'unit_id': 4294967297, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 113, 'y': 146}}, {'unit_id': 4295753729, 'unit_type': 'Artillery', 'alliance': 'Hostile', 'position': {'x': 115, 'y': 147}}, {'unit_id': 4296540161, 'unit_type': 'Mechanized Infantry', 'alliance': 'Friendly', 'position': {'x': 24, 'y': 237}}, {'unit_id': 4296802305, 'unit_type': 'Mortar', 'alliance': 'Friendly', 'position': {'x': 25, 'y': 240}}, {'unit_id': 4297064449, 'unit_type': 'Mechanized Infantry', 'alliance': 'Friendly', 'position': {'x': 23, 'y': 225}}, {'unit_id': 4297326593, 'unit_type': 'Armor', 'alliance': 'Friendly', 'position': {'x': 17, 'y': 112}}, {'unit_id': 4297588737, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 136, 'y': 205}}, {'unit_id': 4298637313, 'unit_type': 'Armor', 'alliance': 'Friendly', 'position': {'x': 20, 'y': 228}}, {'unit_id': 4299161601, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 114, 'y': 213}}, {'unit_id': 4299423745, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 110, 'y': 149}}, {'unit_id': 4300210177, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 105, 'y': 179}}, {'unit_id': 4300472321, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 109, 'y': 205}}, {'unit_id': 4301520897, 'unit_type': 'Armor', 'alliance': 'Friendly', 'position': {'x': 23, 'y': 201}}, {'unit_id': 4301783041, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 111, 'y': 209}}, {'unit_id': 4302045185, 'unit_type': 'Artillery', 'alliance': 'Hostile', 'position': {'x': 140, 'y': 208}}, {'unit_id': 4302831617, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 108, 'y': 145}}, {'unit_id': 4303093761, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 121, 'y': 188}}, {'unit_id': 4303355905, 'unit_type': 'Aviation', 'alliance': 'Friendly', 'position': {'x': 19, 'y': 110}}, {'unit_id': 4302569473, 'unit_type': 'Anti-Armor', 'alliance': 'Friendly', 'position': {'x': 72, 'y': 210}}, {'unit_id': 4302307329, 'unit_type': 'Armor', 'alliance': 'Friendly', 'position': {'x': 24, 'y': 215}}, {'unit_id': 4301258753, 'unit_type': 'Mechanized Infantry', 'alliance': 'Friendly', 'position': {'x': 23, 'y': 218}}, {'unit_id': 4300996609, 'unit_type': 'Mechanized Infantry', 'alliance': 'Friendly', 'position': {'x': 22, 'y': 237}}, {'unit_id': 4300734465, 'unit_type': 'Armor', 'alliance': 'Friendly', 'position': {'x': 24, 'y': 228}}, {'unit_id': 4299948033, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 109, 'y': 179}}, {'unit_id': 4299685889, 'unit_type': 'Aviation', 'alliance': 'Hostile', 'position': {'x': 213, 'y': 76}}, {'unit_id': 4298899457, 'unit_type': 'Armor', 'alliance': 'Friendly', 'position': {'x': 20, 'y': 203}}, {'unit_id': 4298375169, 'unit_type': 'Armor', 'alliance': 'Friendly', 'position': {'x': 23, 'y': 205}}, {'unit_id': 4298113025, 'unit_type': 'Infantry', 'alliance': 'Hostile', 'position': {'x': 81, 'y': 245}}, {'unit_id': 4297850881, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 110, 'y': 174}}, {'unit_id': 4296278017, 'unit_type': 'Armor', 'alliance': 'Friendly', 'position': {'x': 21, 'y': 240}}, {'unit_id': 4296015873, 'unit_type': 'Mechanized Infantry', 'alliance': 'Hostile', 'position': {'x': 105, 'y': 174}}, {'unit_id': 4295491585, 'unit_type': 'Aviation', 'alliance': 'Friendly', 'position': {'x': 20, 'y': 110}}, {'unit_id': 4295229441, 'unit_type': 'Anti-Armor', 'alliance': 'Hostile', 'position': {'x': 114, 'y': 205}}
+        
+Answer:
+Based on the mission objective and the available information, here is a detailed COA that aims to accomplish the mission objective:
+
+```json
+{
+    "coa_id_0": {
+        "overview": "This COA employs a strategy of simultaneous multi-bridge crossings which leverages our diverse unit types to conduct a coordinated offensive. The strategy is feasible due to the established command structure, distribution of units, and availability of multiple crossing points. This COA is acceptable as it balances the risk of splitting forces across multiple bridges with the advantage of overwhelming the enemy at multiple points, reducing their ability to concentrate defenses. It is suitable because it is designed to accomplish both objectives of crossing the river and defeating enemy forces. It is distinguishable from other potential COAs by its multi-axis approach, ensuring we engage the enemy from several fronts simultaneously.",
+        "name": "Multi-Bridge Coordinated Offensive",
+        "task_allocation": [
+            {"unit_id": 4296540161, "unit_type": "Mechanized Infantry", "alliance": "Friendly", "position": {"x": 24, "y": 237}, "command": "attack_move_unit(4296540161, 75.0, 26.0)"},
+            {"unit_id": 4296802305, "unit_type": "Mortar", "alliance": "Friendly", "position": {"x": 25, "y": 240}, "command": "attack_move_unit(4296802305, 76.0, 128.0)"},
+            {"unit_id": 4297064449, "unit_type": "Mechanized Infantry", "alliance": "Friendly", "position": {"x": 23, "y": 225}, "command": "attack_move_unit(4297064449, 81.0, 179.0)"},
+            {"unit_id": 4297326593, "unit_type": "Armor", "alliance": "Friendly", "position": {"x": 17, "y": 112}, "command": "attack_move_unit(4297326593, 82.0, 211.0)"},
+            {"unit_id": 4298637313, "unit_type": "Armor", "alliance": "Friendly", "position": {"x": 20, "y": 228}, "command": "attack_move_unit(4298637313, 75.0, 26.0)"},
+            {"unit_id": 4301258753, "unit_type": "Mechanized Infantry", "alliance": "Friendly", "position": {"x": 23, "y": 218}, "command": "attack_move_unit(4301258753, 76.0, 128.0)"},
+            {"unit_id": 4300996609, "unit_type": "Mechanized Infantry", "alliance": "Friendly", "position": {"x": 22, "y": 237}, "command": "attack_move_unit(4300996609, 81.0, 179.0)"},
+            {"unit_id": 4300734465, "unit_type": "Armor", "alliance": "Friendly", "position": {"x": 24, "y": 228}, "command": "attack_move_unit(4300734465, 82.0, 211.0)"},
+            {"unit_id": 4298375169, "unit_type": "Armor", "alliance": "Friendly", "position": {"x": 23, "y": 205}, "command": "attack_move_unit(4298375169, 75.0, 26.0)"},
+            {"unit_id": 4298899457, "unit_type": "Armor", "alliance": "Friendly", "position": {"x": 20, "y": 203}, "command": "attack_move_unit(4298899457, 76.0, 128.0)"},
+            {"unit_id": 4296278017, "unit_type": "Armor", "alliance": "Friendly", "position": {"x": 21, "y": 240}, "command": "attack_move_unit(4296278017, 81.0, 179.0)"},
+            {"unit_id": 4302307329, "unit_type": "Armor", "alliance": "Friendly", "position": {"x": 24, "y": 215}, "command": "attack_move_unit(4302307329, 82.0, 211.0)"},
+            {"unit_id": 4301520897, "unit_type": "Armor", "alliance": "Friendly", "position": {"x": 23, "y": 201}, "command": "attack_move_unit(4301520897, 75.0, 26.0)"},
+            {"unit_id": 4302569473, "unit_type": "Anti-Armor", "alliance": "Friendly", "position": {"x": 72, "y": 210}, "command": "attack_move_unit(4302569473, 76.0, 128.0)"},
+            {"unit_id": 4303355905, "unit_type": "Aviation", "alliance": "Friendly", "position": {"x": 19, "y": 110}, "command": "attack_move_unit(4303355905, 81.0, 179.0)"},
+            {"unit_id": 4295491585, "unit_type": "Aviation", "alliance": "Friendly", "position": {"x": 20, "y": 110}, "command": "attack_move_unit(4295491585, 82.0, 211.0)"}
+        ]
+    }
+}
+```
+
+This COA outlines a multi-pronged offensive strategy where friendly forces will cross multiple bridges to engage and destroy hostile forces. Each command ensures all friendly units are actively engaged in the operation, utilizing the bridges effectively and spreading out the risk. The distribution of forces across the bridges allows for simultaneous engagements, potentially overwhelming the enemy at different points and preventing them from concentrating their defenses.
+Response time: 43.7380 seconds
+

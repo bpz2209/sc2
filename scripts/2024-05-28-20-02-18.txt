@@ -1,0 +1,116 @@
+Question:
+
+        You are a military commander assistant. Your users are military commanders and your role is to help them develop military courses of action (COA).
+        The military commanders will inform you the mission objective, terrain information, and available friendly and hostile assets before you start developing the COA.
+        Given this information, you will develop a number of courses of action (as specified by the commander) so they can iterate on them with you and pick their favorite one.
+        For each COA to be complete, every friendly unit needs to be assigned one command from the list below. Hostile units cannot be assigned any command.
+        
+        1) attack_move_unit(unit_id, target_x, target_y): commands friendly unit to move to target (x, y) coordinate in the map engaging hostile units in its path.
+        2) engage_target_unit(unit_id, target_unit_id, target_x, target_y): commands friendly unit to engage with hostile target unit, which is located at the target (x, y) coordinate in the map. If out of range, friendly unit will move to the target unit location before engaging.
+        
+        Remember, it is of vital importance that all friendly units are given commands. All generated COAs should be aggregated in a single JSON object following the template below:
+
+        example_coa_statement:
+        
+        {
+            "coa_id_0": {
+                "overview": "<describes overall strategy for this COA, explain why it is feasible (the COA can accomplish the mission within the established time, space, and resource limitations), acceptable (the COA must balance cost and risk with advantage gained), suitable (the COA can accomplish the mission objective), and distinguishable (each COA must differ significantly from the others).>",
+                "name": "<name that summarizes this particular COA>",
+                "task_allocation": [
+                    {"unit_id": 4295229441, "unit_type": "Mechanized infantry", "alliance": "Friendly", "position": {"x": 14.0, "y": 219.0}, "command": "move_unit(4295229441, 35.0, 41.0)"},
+                    {"unit_id": 4299948033, "unit_type": "Aviation", "alliance": "Friendly", "position": {"x": 10.0, "y": 114.0}, "command": "engage_target_unit(4295229441, 3355229433)"}
+                ]
+            },
+            "coa_id_1": {
+                "<new COA using same template as above>"
+            }
+        }
+        
+
+        additional_military_info:
+        
+        - The forms of maneuver are envelopment, flank attack, frontal attack, infiltration, penetration, and turning movement. Commanders use these forms of maneuver to orient on the enemy, not terrain.
+        - The four primary offensive tasks are movement to contact, attack, exploitation, and pursuit. While it is convenient to talk of them as different tasks, in reality they flow readily from one to another.
+        - There are three basic defensive tasks - area defense, mobile defense, and retrograde.
+        
+        
+Answer:
+{
+    "coa_id_0": {
+        "overview": "Our objective is to secure the enemy's stronghold located in the central region of the map. This COA aims to flank the enemy by conducting a turning movement. By moving our mechanized infantry through the eastern terrain towards the enemy's rear, we will surprise and disrupt their defenses. Meanwhile, our aviation unit will provide support by engaging the enemy's key target units.",
+        "name": "Flanking Maneuver",
+        "task_allocation": [
+            {
+                "unit_id": 4295229441,
+                "unit_type": "Mechanized infantry",
+                "alliance": "Friendly",
+                "position": {"x": 14.0, "y": 219.0},
+                "command": "move_unit(4295229441, 35.0, 41.0)"
+            },
+            {
+                "unit_id": 4299948033,
+                "unit_type": "Aviation",
+                "alliance": "Friendly",
+                "position": {"x": 10.0, "y": 114.0},
+                "command": "engage_target_unit(4295229441, 3355229433, 35.0, 41.0)"
+            }
+        ]
+    },
+    "coa_id_1": {
+        "overview": "Our objective is to neutralize the enemy artillery position located on top of the hill in the northern region of the map. This COA utilizes a frontal attack to directly engage the enemy. The mechanized infantry will advance from the south while the aviation unit provides aerial support and engages any hostile units that pose a threat.",
+        "name": "Frontal Assault",
+        "task_allocation": [
+            {
+                "unit_id": 4295229441,
+                "unit_type": "Mechanized infantry",
+                "alliance": "Friendly",
+                "position": {"x": 21.0, "y": 151.0},
+                "command": "attack_move_unit(4295229441, 37.0, 208.0)"
+            },
+            {
+                "unit_id": 4299948033,
+                "unit_type": "Aviation",
+                "alliance": "Friendly",
+                "position": {"x": 8.0, "y": 108.0},
+                "command": "engage_target_unit(4295229441, 9052294442, 37.0, 208.0)"
+            }
+        ]
+    }
+}
+Response time: 17.7809 seconds
+
+Question:
+
+        I need to generate a single military course of action to accomplish the following mission objective:
+        Move friendly forces from the west side of the river to the east via multiple bridges, destroy all hostile forces, and ultimately seize objective OBJ Lion East at the top right corner of the map (coordinates x: 200, y: 89).
+        The mission is taking place in the following map/terrain:
+        The map is split in two major portions (west and east sides) by a river that runs from north to south. There are four bridges that can be used to cross this river. Bridge names and exit coordinates are as follows: 1) Bridge Bobcat (x: 75, y: 26), 2) Bridge Wolf (x: 76, y: 128), 3) Bridge Bear (x:81, y: 179), and 4) Bridge Lion (x: 82, y: 211).
+        The available Friendly and Hostile forces with their respective identification tags, types, and position are defined in the following JSON object:
+        {'unit_id': 4294967297, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 39, 'y': 228}}, {'unit_id': 4295753729, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 79, 'y': 219}}, {'unit_id': 4296278017, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 35, 'y': 239}}, {'unit_id': 4296802305, 'unit_type': 'Infantry', 'alliance': 'Friendly', 'position': {'x': 24, 'y': 229}}, {'unit_id': 4297588737, 'unit_type': 'Infantry', 'alliance': 'Friendly', 'position': {'x': 24, 'y': 227}}, {'unit_id': 4297850881, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 38, 'y': 226}}, {'unit_id': 4299685889, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 84, 'y': 215}}, {'unit_id': 4299948033, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 34, 'y': 227}}, {'unit_id': 4300210177, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 80, 'y': 215}}, {'unit_id': 4300472321, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 39, 'y': 239}}, {'unit_id': 4300996609, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 38, 'y': 240}}, {'unit_id': 4301258753, 'unit_type': 'Infantry', 'alliance': 'Hostile', 'position': {'x': 57, 'y': 234}}, {'unit_id': 4301783041, 'unit_type': 'Infantry', 'alliance': 'Friendly', 'position': {'x': 25, 'y': 224}}, {'unit_id': 4302307329, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 36, 'y': 232}}, {'unit_id': 4302045185, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 37, 'y': 237}}, {'unit_id': 4301520897, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 83, 'y': 217}}, {'unit_id': 4300734465, 'unit_type': 'Mechanized Infantry', 'alliance': 'Friendly', 'position': {'x': 33, 'y': 232}}, {'unit_id': 4299423745, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 32, 'y': 227}}, {'unit_id': 4299161601, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 40, 'y': 230}}, {'unit_id': 4298899457, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 78, 'y': 213}}, {'unit_id': 4298637313, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 37, 'y': 240}}, {'unit_id': 4298375169, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 86, 'y': 217}}, {'unit_id': 4298113025, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 36, 'y': 236}}, {'unit_id': 4297326593, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 41, 'y': 227}}, {'unit_id': 4297064449, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 41, 'y': 230}}, {'unit_id': 4296540161, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 85, 'y': 220}}, {'unit_id': 4296015873, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 35, 'y': 228}}, {'unit_id': 4295491585, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 37, 'y': 238}}, {'unit_id': 4295229441, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 82, 'y': 220}}
+        
+Answer:
+To accomplish the mission objective of moving friendly forces from the west side of the river to the east, destroying all hostile forces, and seizing objective OBJ Lion East, the following course of action is proposed:
+
+1. Begin by conducting a thorough reconnaissance of the entire area to gather intelligence on enemy positions, strength, and defenses.
+
+2. Divide friendly forces into two main groups - Group A and Group B. Group A will be responsible for securing and holding the bridges, while Group B will conduct the assault on OBJ Lion East.
+
+3. Group A will consist of mechanized infantry units and will be deployed to secure and hold all four bridges - Bridge Bobcat, Bridge Wolf, Bridge Bear, and Bridge Lion. They will establish defensive positions to prevent enemy forces from crossing the river.
+
+4. Group B will be composed of infantry and unknown unit types. They will move covertly along the west side of the river, avoiding enemy detection, and proceed towards OBJ Lion East.
+
+5. Utilizing the available bridges, Group B will cross the river at Bridge Bobcat, Bridge Wolf, or Bridge Bear, depending on the least defended/observed bridge. They will then continue their advance towards OBJ Lion East.
+
+6. Along the way, Group B will engage and neutralize any hostile forces encountered. Coordination and communication between units will be crucial to successfully complete this phase of the operation.
+
+7. Once Group B reaches OBJ Lion East, they will secure the objective by eliminating any remaining hostile forces and establishing a defensive perimeter.
+
+8. Simultaneously, Group A will continue to hold the bridges, preventing enemy reinforcements or counterattacks from crossing the river.
+
+9. Throughout the operation, maintain close air support and surveillance provided by unmanned aerial vehicles (UAVs) to monitor enemy movements and provide timely intelligence to friendly forces.
+
+10. Once the objective is secured and all hostile forces are neutralized, consolidate friendly forces at OBJ Lion East and prepare for any additional tasks or further orders.
+
+It is important to note that this course of action is a general outline and may require adjustments based on real-time intelligence, terrain conditions, and enemy reactions. Flexibility and adaptability will be key to the success of the operation.
+Response time: 14.4820 seconds
+

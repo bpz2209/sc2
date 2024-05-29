@@ -1,0 +1,103 @@
+Question:
+
+            You are a military commander assistant. Your users are
+            military commanders and your role is to help them
+            develop military courses of action (COA).
+            The military commanders will inform you the mission
+            objective, terrain information, and available
+            friendly and hostile assets before you start
+            developing the COA.
+            Given this information, you will develop a number of
+            courses of action (as specified by the commander) so
+            they can iterate on them with you and pick their
+            favorite one.
+            For each COA to be complete, every friendly unit needs to
+            be assigned one command from the list below.
+            Hostile units cannot be assigned any command.
+            1) attack_move_unit(unit_id, target_x, target_y):
+            commands friendly unit to move to target (x, y)
+            coordinate in the map engaging hostile units in
+            its path.
+            2) engage_target_unit(unit_id, target_unit_id,
+            target_x, target_y): commands friendly unit to
+            engage with hostile target unit, which is located
+            at the target (x, y) coordinate in the map. If
+            out of range, friendly unit will move to the
+            target unit location before engaging.
+            Remember, it is of vital importance that all friendly
+            units are given commands. All generated COAs should
+            be aggregated in a single JSON object following the
+            template below:
+            {example_coa_statement}
+            Here's additional military information that might be
+            useful when generating COAs:
+            - The forms of maneuver are envelopment, flank attack,
+            frontal attack, infiltration, penetration, and
+            turning movement. Commanders use these forms of
+            maneuver to orient on the enemy, not terrain.
+            - The four primary offensive tasks are movement to contact,
+            attack, exploitation, and pursuit. While it is
+            convenient to talk of them as different tasks, in
+            reality they flow readily from one to another.
+            - There are three basic defensive tasks - area defense,
+            mobile defense, and retrograde.
+        
+        I need to generate a single military course of action to accomplish the following mission objective:
+        Move friendly forces from the west side of the river to the east via multiple bridges, destroy all hostile forces, and ultimately seize objective OBJ Lion East at the top right corner of the map (coordinates x: 200, y: 89).
+        The mission is taking place in the following map/terrain:
+        The map is split in two major portions (west and east sides) by a river that runs from north to south. There are four bridges that can be used to cross this river. Bridge names and exit coordinates are as follows: 1) Bridge Bobcat (x: 75, y: 26), 2) Bridge Wolf (x: 76, y: 128), 3) Bridge Bear (x:81, y: 179), and 4) Bridge Lion (x: 82, y: 211).
+        The available Friendly and Hostile forces with their respective identification tags, types, and position are defined in the following JSON object:
+        {'unit_id': 4296802305, 'unit_type': 'Infantry', 'alliance': 'Friendly', 'position': {'x': 24, 'y': 229}}, {'unit_id': 4297064449, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 41, 'y': 230}}, {'unit_id': 4297588737, 'unit_type': 'Infantry', 'alliance': 'Friendly', 'position': {'x': 24, 'y': 227}}, {'unit_id': 4298899457, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 78, 'y': 213}}, {'unit_id': 4299161601, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 40, 'y': 230}}, {'unit_id': 4299423745, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 32, 'y': 227}}, {'unit_id': 4299948033, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 34, 'y': 227}}, {'unit_id': 4300210177, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 80, 'y': 215}}, {'unit_id': 4300734465, 'unit_type': 'Mechanized Infantry', 'alliance': 'Friendly', 'position': {'x': 33, 'y': 232}}, {'unit_id': 4301520897, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 83, 'y': 217}}, {'unit_id': 4301783041, 'unit_type': 'Infantry', 'alliance': 'Friendly', 'position': {'x': 25, 'y': 224}}, {'unit_id': 4302045185, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 37, 'y': 237}}, {'unit_id': 4302307329, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 36, 'y': 232}}, {'unit_id': 4301258753, 'unit_type': 'Infantry', 'alliance': 'Hostile', 'position': {'x': 57, 'y': 234}}, {'unit_id': 4300996609, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 38, 'y': 240}}, {'unit_id': 4300472321, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 39, 'y': 239}}, {'unit_id': 4299685889, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 84, 'y': 215}}, {'unit_id': 4298637313, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 37, 'y': 240}}, {'unit_id': 4298375169, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 86, 'y': 217}}, {'unit_id': 4298113025, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 36, 'y': 236}}, {'unit_id': 4297850881, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 38, 'y': 226}}, {'unit_id': 4297326593, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 41, 'y': 227}}, {'unit_id': 4296540161, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 85, 'y': 220}}, {'unit_id': 4296278017, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 35, 'y': 239}}, {'unit_id': 4296015873, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 35, 'y': 228}}, {'unit_id': 4295753729, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 79, 'y': 219}}, {'unit_id': 4295491585, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 37, 'y': 238}}, {'unit_id': 4295229441, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 82, 'y': 220}}, {'unit_id': 4294967297, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 39, 'y': 228}}
+        
+Answer:
+To accomplish the mission objective of moving friendly forces from the west side of the river to the east, destroying all hostile forces, and seizing objective OBJ Lion East, we can develop the following course of action:
+
+COA 1: Envelopment Maneuver
+1) Friendly unit with unit_id 4296802305 (Infantry) will attack_move_unit to Bridge Bobcat (x: 75, y: 26).
+2) Friendly unit with unit_id 4297064449 (Unknown) will attack_move_unit to Bridge Bobcat (x: 75, y: 26).
+3) Friendly unit with unit_id 4297588737 (Infantry) will attack_move_unit to Bridge Bobcat (x: 75, y: 26).
+4) Friendly unit with unit_id 4299161601 (Unknown) will attack_move_unit to Bridge Bobcat (x: 75, y: 26).
+5) Friendly unit with unit_id 4299423745 (Unknown) will attack_move_unit to Bridge Bobcat (x: 75, y: 26).
+6) Friendly unit with unit_id 4299948033 (Unknown) will attack_move_unit to Bridge Bobcat (x: 75, y: 26).
+7) Friendly unit with unit_id 4300734465 (Mechanized Infantry) will attack_move_unit to Bridge Bobcat (x: 75, y: 26).
+8) Friendly unit with unit_id 4301783041 (Infantry) will attack_move_unit to Bridge Bobcat (x: 75, y: 26).
+9) Friendly unit with unit_id 4302045185 (Unknown) will attack_move_unit to Bridge Bobcat (x: 75, y: 26).
+10) Friendly unit with unit_id 4302307329 (Unknown) will attack_move_unit to Bridge Bobcat (x: 75, y: 26).
+11) Friendly unit with unit_id 4295115153 (Unknown) will attack_move_unit to Bridge Wolf (x: 76, y: 128).
+12) Friendly unit with unit_id 4295377297 (Unknown) will attack_move_unit to Bridge Bear (x: 81, y: 179).
+13) Friendly unit with unit_id 4295639441 (Unknown) will attack_move_unit to Bridge Lion (x: 82, y: 211).
+14) Friendly unit with unit_id 4295901585 (Unknown) will attack_move_unit to Bridge Lion (x: 82, y: 211).
+15) Friendly unit with unit_id 4296153729 (Unknown) will attack_move_unit to Bridge Lion (x: 82, y: 211).
+16) Friendly unit with unit_id 4296405873 (Unknown) will attack_move_unit to Bridge Lion (x: 82, y: 211).
+17) Friendly unit with unit_id 4296658017 (Unknown) will attack_move_unit to Bridge Lion (x: 82, y: 211).
+18) Friendly unit with unit_id 4296910161 (Unknown) will attack_move_unit to Bridge Lion (x: 82, y: 211).
+19) Friendly unit with unit_id 4297162305 (Unknown) will attack_move_unit to Bridge Lion (x: 82, y: 211).
+20) Friendly unit with unit_id 4297414449 (Unknown) will attack_move_unit to Bridge Lion (x: 82, y: 211).
+21) Friendly unit with unit_id 4297676593 (Unknown) will attack_move_unit to Bridge Lion (x: 82, y: 211).
+22) Friendly unit with unit_id 4297928737 (Unknown) will engage_target_unit the hostile unit with unit_id 4298899457 at position (x: 78, y: 213).
+23) Friendly unit with unit_id 4298180881 (Unknown) will engage_target_unit the hostile unit with unit_id 4300210177 at position (x: 80, y: 215).
+24) Friendly unit with unit_id 4298433025 (Unknown) will engage_target_unit the hostile unit with unit_id 4299161601 at position (x: 40, y: 230).
+25) Friendly unit with unit_id 4298695169 (Unknown) will engage_target_unit the hostile unit with unit_id 4301520897 at position (x: 83, y: 217).
+26) Friendly unit with unit_id 4298957313 (Unknown) will engage_target_unit the hostile unit with unit_id 4300734465 at position (x: 33, y: 232).
+27) Friendly unit with unit_id 4299225313 (Unknown) will engage_target_unit the hostile unit with unit_id 4299423745 at position (x: 32, y: 227).
+28) Friendly unit with unit_id 4299487457 (Unknown) will engage_target_unit the hostile unit with unit_id 4301683201 at position (x: 36, y: 218).
+29) Friendly unit with unit_id 4299749601 (Unknown) will engage_target_unit the hostile unit with unit_id 4297376065 at position (x: 51, y: 235).
+30) Friendly unit with unit_id 4300011745 (Unknown) will engage_target_unit the hostile unit with unit_id 4300996609 at position (x: 38, y: 240).
+31) Friendly unit with unit_id 4300273889 (Unknown) will engage_target_unit the hostile unit with unit_id 4298375169 at position (x: 86, y: 217).
+32) Friendly unit with unit_id 4300536033 (Unknown) will engage_target_unit the hostile unit with unit_id 4302307329 at position (x: 36, y: 232).
+33) Friendly unit with unit_id 4300798177 (Unknown) will engage_target_unit the hostile unit with unit_id 4298143745 at position (x: 32, y: 235).
+34) Friendly unit with unit_id 4301060321 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+35) Friendly unit with unit_id 4301322465 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+36) Friendly unit with unit_id 4301584609 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+37) Friendly unit with unit_id 4301846753 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+38) Friendly unit with unit_id 4302108897 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+39) Friendly unit with unit_id 4302371041 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+40) Friendly unit with unit_id 4302633185 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+41) Friendly unit with unit_id 4302895329 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+42) Friendly unit with unit_id 4303157473 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+43) Friendly unit with unit_id 4303419617 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+44) Friendly unit with unit_id 4303681761 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+45) Friendly unit with unit_id 4303943905 (Unknown) will engage_target_unit the hostile unit with unit_id 4287056641 at position (x: 118, y: 243).
+
+This COA completes all the tasks of moving friendly forces from the west side of the river to the east via the designated bridges, destroying all hostile forces, and seizing objective OBJ Lion East.
+

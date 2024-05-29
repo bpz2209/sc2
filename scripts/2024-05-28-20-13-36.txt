@@ -1,0 +1,162 @@
+Question:
+
+        You are a military commander assistant. Your users are military commanders and your role is to help them develop military courses of action (COA).
+        The military commanders will inform you the mission objective, terrain information, and available friendly and hostile assets before you start developing the COA.
+        Given this information, you will develop a number of courses of action (as specified by the commander) so they can iterate on them with you and pick their favorite one.
+        For each COA to be complete, every friendly unit needs to be assigned one command from the list below. Hostile units cannot be assigned any command.
+        
+        1) attack_move_unit(unit_id, target_x, target_y): commands friendly unit to move to target (x, y) coordinate in the map engaging hostile units in its path.
+        2) engage_target_unit(unit_id, target_unit_id, target_x, target_y): commands friendly unit to engage with hostile target unit, which is located at the target (x, y) coordinate in the map. If out of range, friendly unit will move to the target unit location before engaging.
+        
+        Remember, it is of vital importance that all friendly units are given commands. All generated COAs should be aggregated in a single JSON object following the template below:
+
+        example_coa_statement:
+        
+        {
+            "coa_id_0": {
+                "overview": "<describes overall strategy for this COA, explain why it is feasible (the COA can accomplish the mission within the established time, space, and resource limitations), acceptable (the COA must balance cost and risk with advantage gained), suitable (the COA can accomplish the mission objective), and distinguishable (each COA must differ significantly from the others).>",
+                "name": "<name that summarizes this particular COA>",
+                "task_allocation": [
+                    {"unit_id": 4295229441, "unit_type": "Mechanized infantry", "alliance": "Friendly", "position": {"x": 14.0, "y": 219.0}, "command": "move_unit(4295229441, 35.0, 41.0)"},
+                    {"unit_id": 4299948033, "unit_type": "Aviation", "alliance": "Friendly", "position": {"x": 10.0, "y": 114.0}, "command": "engage_target_unit(4295229441, 3355229433)"}
+                ]
+            },
+            "coa_id_1": {
+                "<new COA using same template as above>"
+            }
+        }
+        
+
+        additional_military_info:
+        
+        - The forms of maneuver are envelopment, flank attack, frontal attack, infiltration, penetration, and turning movement. Commanders use these forms of maneuver to orient on the enemy, not terrain.
+        - The four primary offensive tasks are movement to contact, attack, exploitation, and pursuit. While it is convenient to talk of them as different tasks, in reality they flow readily from one to another.
+        - There are three basic defensive tasks - area defense, mobile defense, and retrograde.
+        
+        
+Answer:
+{
+  "coa_id_0": {
+    "overview": "Our overall strategy for this COA is to execute a flank attack, taking advantage of the terrain to outflank the enemy and disrupt their defenses. This COA is feasible as it can be executed within the established time, space, and resource limitations. It is acceptable as it balances cost and risk with the advantage gained. It is suitable as it can accomplish the mission objective of neutralizing the enemy. It is distinguishable as it significantly differs from the other COAs.",
+    "name": "Flank Attack",
+    "task_allocation": [
+      {
+        "unit_id": 4295229441,
+        "unit_type": "Mechanized infantry",
+        "alliance": "Friendly",
+        "position": {
+          "x": 14.0,
+          "y": 219.0
+        },
+        "command": "attack_move_unit(4295229441, 82.0, 122.0)"
+      },
+      {
+        "unit_id": 4299948033,
+        "unit_type": "Aviation",
+        "alliance": "Friendly",
+        "position": {
+          "x": 10.0,
+          "y": 114.0
+        },
+        "command": "engage_target_unit(4295229441, 3355229433, 82.0, 122.0)"
+      }
+    ]
+  },
+  "coa_id_1": {
+    "overview": "Our overall strategy for this COA is to execute a frontal attack, focusing on overwhelming the enemy with a direct assault. This COA is feasible as it can be executed within the established time, space, and resource limitations. It is acceptable as it balances cost and risk with the advantage gained. It is suitable as it can accomplish the mission objective of neutralizing the enemy. It is distinguishable as it significantly differs from the other COAs.",
+    "name": "Frontal Attack",
+    "task_allocation": [
+      {
+        "unit_id": 4295229441,
+        "unit_type": "Mechanized infantry",
+        "alliance": "Friendly",
+        "position": {
+          "x": 14.0,
+          "y": 219.0
+        },
+        "command": "attack_move_unit(4295229441, 70.0, 80.0)"
+      },
+      {
+        "unit_id": 4299948033,
+        "unit_type": "Aviation",
+        "alliance": "Friendly",
+        "position": {
+          "x": 10.0,
+          "y": 114.0
+        },
+        "command": "engage_target_unit(4295229441, 3355229433, 70.0, 80.0)"
+      }
+    ]
+  },
+  "coa_id_2": {
+    "overview": "Our overall strategy for this COA is to execute a penetration, aiming to break through the enemy's defensive line and create chaos in their rear. This COA is feasible as it can be executed within the established time, space, and resource limitations. It is acceptable as it balances cost and risk with the advantage gained. It is suitable as it can accomplish the mission objective of neutralizing the enemy. It is distinguishable as it significantly differs from the other COAs.",
+    "name": "Penetration",
+    "task_allocation": [
+      {
+        "unit_id": 4295229441,
+        "unit_type": "Mechanized infantry",
+        "alliance": "Friendly",
+        "position": {
+          "x": 14.0,
+          "y": 219.0
+        },
+        "command": "attack_move_unit(4295229441, 120.0, 56.0)"
+      },
+      {
+        "unit_id": 4299948033,
+        "unit_type": "Aviation",
+        "alliance": "Friendly",
+        "position": {
+          "x": 10.0,
+          "y": 114.0
+        },
+        "command": "engage_target_unit(4295229441, 3355229433, 120.0, 56.0)"
+      }
+    ]
+  }
+}
+Response time: 34.7445 seconds
+
+Question:
+
+        I need to generate a single military course of action to accomplish the following mission objective:
+        Move friendly forces from the west side of the river to the east via multiple bridges, destroy all hostile forces, and ultimately seize objective OBJ Lion East at the top right corner of the map (coordinates x: 200, y: 89).
+        The mission is taking place in the following map/terrain:
+        The map is split in two major portions (west and east sides) by a river that runs from north to south. There are four bridges that can be used to cross this river. Bridge names and exit coordinates are as follows: 1) Bridge Bobcat (x: 75, y: 26), 2) Bridge Wolf (x: 76, y: 128), 3) Bridge Bear (x:81, y: 179), and 4) Bridge Lion (x: 82, y: 211).
+        The available Friendly and Hostile forces with their respective identification tags, types, and position are defined in the following JSON object:
+        {'unit_id': 4294967297, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 39, 'y': 228}}, {'unit_id': 4295491585, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 37, 'y': 238}}, {'unit_id': 4296278017, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 35, 'y': 239}}, {'unit_id': 4297064449, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 41, 'y': 230}}, {'unit_id': 4297326593, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 41, 'y': 227}}, {'unit_id': 4297588737, 'unit_type': 'Infantry', 'alliance': 'Friendly', 'position': {'x': 24, 'y': 227}}, {'unit_id': 4297850881, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 38, 'y': 226}}, {'unit_id': 4298637313, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 37, 'y': 240}}, {'unit_id': 4299423745, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 32, 'y': 227}}, {'unit_id': 4299685889, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 84, 'y': 215}}, {'unit_id': 4300472321, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 39, 'y': 239}}, {'unit_id': 4301258753, 'unit_type': 'Infantry', 'alliance': 'Hostile', 'position': {'x': 57, 'y': 234}}, {'unit_id': 4301520897, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 83, 'y': 217}}, {'unit_id': 4302045185, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 37, 'y': 237}}, {'unit_id': 4302307329, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 36, 'y': 232}}, {'unit_id': 4301783041, 'unit_type': 'Infantry', 'alliance': 'Friendly', 'position': {'x': 25, 'y': 224}}, {'unit_id': 4300996609, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 38, 'y': 240}}, {'unit_id': 4300734465, 'unit_type': 'Mechanized Infantry', 'alliance': 'Friendly', 'position': {'x': 33, 'y': 232}}, {'unit_id': 4300210177, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 80, 'y': 215}}, {'unit_id': 4299948033, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 34, 'y': 227}}, {'unit_id': 4299161601, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 40, 'y': 230}}, {'unit_id': 4298899457, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 78, 'y': 213}}, {'unit_id': 4298375169, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 86, 'y': 217}}, {'unit_id': 4298113025, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 36, 'y': 236}}, {'unit_id': 4296802305, 'unit_type': 'Infantry', 'alliance': 'Friendly', 'position': {'x': 24, 'y': 229}}, {'unit_id': 4296540161, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 85, 'y': 220}}, {'unit_id': 4296015873, 'unit_type': 'Unknown', 'alliance': 'Friendly', 'position': {'x': 35, 'y': 228}}, {'unit_id': 4295753729, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 79, 'y': 219}}, {'unit_id': 4295229441, 'unit_type': 'Unknown', 'alliance': 'Hostile', 'position': {'x': 82, 'y': 220}}
+        
+Answer:
+In order to accomplish the mission objective of moving friendly forces from the west side of the river to the east, destroying all hostile forces, and seizing objective OBJ Lion East at the coordinates x: 200, y: 89, the following course of action can be implemented:
+
+1. Objective Analysis:
+   - Assess the current position and strength of friendly and hostile forces.
+   - Analyze the terrain and identify possible routes and obstacles.
+
+2. Friendly Force Movement:
+   - Manipulate friendly forces to position them near the bridges for crossing the river.
+   - Coordinate movement to ensure synchronized action.
+
+3. Bridge Selection:
+   - Evaluate the four available bridges based on their proximity to friendly forces and the enemy's likely defensive positions.
+   - Select the most suitable bridge based on factors such as cover, concealment, and potential enemy resistance.
+
+4. River Crossing:
+   - Organize and provide covering fire while friendly forces cross the selected bridge.
+   - Allocate resources for quick and efficient crossing.
+
+5. Hostile Force Engagement:
+   - Establish reconnaissance and surveillance capabilities to gather information on hostile forces and their activities.
+   - Coordinate airstrikes, artillery support, and other available assets to weaken or neutralize hostile forces.
+
+6. Objective Seizure:
+   - Conduct a deliberate assault on objective OBJ Lion East to secure the position.
+   - Coordinate forces to establish a defensive perimeter around the objective.
+
+7. Consolidation and Reorganization:
+   - Secure the objective area and conduct post-assault reorganization.
+   - Reassess the current situation and adjust the plan if necessary.
+
+It is important to note that this is a general course of action and further details and specific tactics will depend on the specific situation, enemy capabilities, available resources, and the commander's intent. Coordination and communication between all units involved are crucial for mission success.
+Response time: 13.8887 seconds
+
