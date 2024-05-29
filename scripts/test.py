@@ -120,7 +120,7 @@ class COA_GPT:
 
     def generate_battlefield_info(self, units_on_screen):
         """生成战场信息准备输入GPT模型"""
-        MISSION_OBJECTIVE_TIGERCLAW = "Move friendly forces from the west side of the river to the east via multiple bridges, destroy all hostile forces, and ultimately seize objective OBJ Lion East at the top right corner of the map (coordinates x: 200, y: 89)."
+        # MISSION_OBJECTIVE_TIGERCLAW = "Move friendly forces from the west side of the river to the east via multiple bridges, destroy all hostile forces, and ultimately seize objective OBJ Lion East at the top right corner of the map (coordinates x: 200, y: 89)."
         MISSION_OBJECTIVE_TIGERCLAW = "Move friendly forces from the west side of the river to the east via multiple bridges, destroy all hostile forces."
         TERRAIN_TIGERCLAW = "The map is split in two major portions (west and east sides) by a river that runs from north to south. There are four bridges that can be used to cross this river. Bridge names and exit coordinates are as follows: 1) Bridge Bobcat (x: 75, y: 26), 2) Bridge Wolf (x: 76, y: 128), 3) Bridge Bear (x:81, y: 179), and 4) Bridge Lion (x: 82, y: 211)."
 
@@ -241,8 +241,7 @@ def run_game(unused_argv):
     coa_gpt = COA_GPT(api_key="sk-01e7u2gwWhhrLIVpFb1b8fC1126e414bAf74D1BeFf70C9D8", base_url="https://api.bianxieai.com/v1", model_name="gpt-3.5-turbo")
 
     # 仿真次数
-    num_simulations = 5
-
+    num_simulations = 1
     for sim in range(num_simulations):
         scores = []
         plt.ion()  # 开启交互模式
@@ -296,7 +295,6 @@ def run_game(unused_argv):
 
             # 获取所有友军单位的ID
             all_friendly_unit_ids = {unit.tag for unit in units_on_screen if unit.alliance == _PLAYER_SELF}
-            count = 0
             while True:
                 timestep = timesteps[0]
                 units_on_screen = print_units(timestep)
@@ -355,9 +353,6 @@ def run_game(unused_argv):
 
                 # 检查游戏是否结束
                 game_end = timestep.last()
-                count = count + 1
-                if count > 30:
-                    break
                 if game_end:
                     break
 
