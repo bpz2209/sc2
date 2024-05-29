@@ -3,7 +3,6 @@
 ```
 pip install pysc2/
 pip install -r requirements.txt
-
 ```
 ## 运行
 ```
