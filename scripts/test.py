@@ -142,8 +142,8 @@ class COA_GPT:
         """
         
         # 打印提供给GPT的战场信息
-        print("GPT战场信息:")
-        print(all_info)
+        # print("GPT战场信息:")
+        # print(all_info)
         return all_info
 
 def initialize_env():
@@ -179,16 +179,16 @@ def print_units(timestep):
         sc2_unit_name = sc2_unit_type_to_name.get(unit.unit_type, "Unknown")
         tc_unit_name = unit_mapping.get(sc2_unit_name, "Unknown")
         attack_range, attack_damage = get_unit_weapon_info(unit)
-        print(f"联盟: {alliance}, 单位ID: {unit.tag}, 单位类型: {unit.unit_type}, TigerClaw 类型: {tc_unit_name}, 位置: ({unit.x}, {unit.y}), "
-              f"攻击范围: {attack_range}, 攻击力: {attack_damage}, 血量: {unit.health} "
-              f"护盾: {unit.shield if hasattr(unit, 'shield') else 'N/A'}, 能量: {unit.energy if hasattr(unit, 'energy') else 'N/A'}")
+        # print(f"联盟: {alliance}, 单位ID: {unit.tag}, 单位类型: {unit.unit_type}, TigerClaw 类型: {tc_unit_name}, 位置: ({unit.x}, {unit.y}), "
+        #       f"攻击范围: {attack_range}, 攻击力: {attack_damage}, 血量: {unit.health} "
+        #       f"护盾: {unit.shield if hasattr(unit, 'shield') else 'N/A'}, 能量: {unit.energy if hasattr(unit, 'energy') else 'N/A'}")
     return units_on_screen
 
 def attack_move_unit(env, timestep, unit_id, target_x, target_y):
     """命令单位移动到指定坐标并攻击途中的敌人"""
     try:
         action = actions.RAW_FUNCTIONS.Attack_pt("now", unit_id, (target_x, target_y))
-        print(f"Executing attack-move command for unit {unit_id} to position ({target_x, target_y})")
+        # print(f"Executing attack-move command for unit {unit_id} to position ({target_x, target_y})")
         try:
             env.step([action])
         except Exception as e:
@@ -200,7 +200,7 @@ def engage_target_unit(env, timestep, unit_id, target_unit_id):
     """命令单位攻击指定ID的目标单位，并且不攻击其他目标"""
     try:
         action = actions.RAW_FUNCTIONS.Attack_unit("now", unit_id, target_unit_id)
-        print(f"Executing engage command for unit {unit_id} to attack target unit with ID {target_unit_id}")
+        # print(f"Executing engage command for unit {unit_id} to attack target unit with ID {target_unit_id}")
         try:
             env.step([action])
         except Exception as e:
@@ -213,13 +213,12 @@ def parse_command(command):
     parsed_commands = []
     units_with_commands = set()
     for coa_id, coa in command.items():
-        print(f"解析 {coa_id}: {coa['name']}")
+        # print(f"解析 {coa_id}: {coa['name']}")
         for task in coa['task_allocation']:
             try:
                 unit_id = task['unit_id']
                 command_str = task['command']
                 units_with_commands.add(unit_id)
-                print(command_str)
                 if command_str:
                     try:
                         command_name, args = command_str.split('(', 1)
@@ -241,7 +240,7 @@ def run_game(unused_argv):
     coa_gpt = COA_GPT(api_key="sk-01e7u2gwWhhrLIVpFb1b8fC1126e414bAf74D1BeFf70C9D8", base_url="https://api.bianxieai.com/v1", model_name="gpt-3.5-turbo")
 
     # 仿真次数
-    num_simulations = 1
+    num_simulations = 5
     for sim in range(num_simulations):
         scores = []
         plt.ion()  # 开启交互模式
@@ -289,9 +288,9 @@ def run_game(unused_argv):
             units_on_screen = print_units(timestep)
             info = coa_gpt.generate_battlefield_info(units_on_screen)
             system_prompt = coa_gpt.system_prompt()
-            response = coa_gpt.chat(system_prompt + info)
-            print("在info下的回复：")
-            print(response)
+            # response = coa_gpt.chat(system_prompt + info)
+            # print("在info下的回复：")
+            # print(response)
 
             # 获取所有友军单位的ID
             all_friendly_unit_ids = {unit.tag for unit in units_on_screen if unit.alliance == _PLAYER_SELF}
@@ -299,35 +298,37 @@ def run_game(unused_argv):
                 timestep = timesteps[0]
                 units_on_screen = print_units(timestep)
 
-                if not units_on_screen:
-                    break  # 没有友方单位，结束循环
+                # if not units_on_screen:
+                #     break  # 没有友方单位，结束循环
 
                 # 执行解析后的命令
                 # 寻找response中的命令({}部分)
+                response = "1"
                 response_json_start = response.find("{")
                 response_json_end = response.rfind("}") + 1
                 if response_json_start != -1 and response_json_end != -1:
                     response_json = response[response_json_start:response_json_end]
                     try:
                         parsed_commands, units_with_commands = parse_command(json.loads(response_json))
+                        parsed_commands = parse_command(json.loads(command_json))
                         for command_func, *args in parsed_commands:
-                            print(f"Executing GPT command: {command_func.__name__} with args: {args}")
+                            # print(f"Executing GPT command: {command_func.__name__} with args: {args}")
                             command_func(env, timestep, *args)
                             timesteps = env.step([actions.RAW_FUNCTIONS.no_op()])
                     except json.JSONDecodeError:
                         print("Failed to parse JSON from GPT response.")
                 
                 # 打印未接收到命令的单位
-                units_without_commands = all_friendly_unit_ids - units_with_commands
-                if units_without_commands:
-                    print("Units without commands:")
-                    for unit_id in units_without_commands:
-                        print(f"Unit ID: {unit_id}")
+                # units_without_commands = all_friendly_unit_ids - units_with_commands
+                # if units_without_commands:
+                #     print("Units without commands:")
+                #     for unit_id in units_without_commands:
+                #         print(f"Unit ID: {unit_id}")
 
                 # 打印命令已完成的单位
-                print("Commands executed for units:")
-                for unit_id in units_with_commands:
-                    print(f"Unit ID: {unit_id}")
+                # print("Commands executed for units:")
+                # for unit_id in units_with_commands:
+                #     print(f"Unit ID: {unit_id}")
 
                 # 记录分数
                 score = timestep.observation['score_cumulative'][0]
@@ -353,6 +354,9 @@ def run_game(unused_argv):
                 # 检查游戏是否结束
                 game_end = timestep.last()
                 print(f"Game End: {game_end}")
+                remaining_time = timestep.observation['game_loop'][0]  # 获取游戏剩余时间
+                print(f"Remaining time: {remaining_time}")
+                
                 if game_end:
                     break
 
