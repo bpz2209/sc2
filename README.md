@@ -1,4 +1,4 @@
-# 使用（推荐使用Anaconda3进行虚拟环境管理）
+# 使用手册（推荐使用Anaconda3进行虚拟环境管理）
 ## 安装环境
 ```
 pip install pysc2/
