@@ -84,7 +84,7 @@ class COA_GPT:
                 "overview": "<describes overall strategy for this COA, explain why it is feasible (the COA can accomplish the mission within the established time, space, and resource limitations), acceptable (the COA must balance cost and risk with advantage gained), suitable (the COA can accomplish the mission objective), and distinguishable (each COA must differ significantly from the others).>",
                 "name": "<name that summarizes this particular COA>",
                 "task_allocation": [
-                    {"unit_id": 4295229441, "unit_type": "Mechanized infantry", "alliance": "Friendly", "position": {"x": 14.0, "y": 219.0}, "command": "move_unit(4295229441, 35.0, 41.0)"},
+                    {"unit_id": 4295229441, "unit_type": "Mechanized infantry", "alliance": "Friendly", "position": {"x": 14.0, "y": 219.0}, "command": "attack_move_unit(4295229441, 35.0, 41.0)"},
                     {"unit_id": 4299948033, "unit_type": "Aviation", "alliance": "Friendly", "position": {"x": 10.0, "y": 114.0}, "command": "engage_target_unit(4295229441, 3355229433)"}
                 ]
             },
@@ -149,7 +149,7 @@ class COA_GPT:
 def initialize_env():
     """初始化SC2环境"""
     return sc2_env.SC2Env(
-        map_name="TigerClaw_V2",
+        map_name="TigerClaw_V1",
         players=[
             sc2_env.Agent(sc2_env.Race.terran),  # 玩家1
             sc2_env.Bot(sc2_env.Race.zerg, sc2_env.Difficulty.medium)  # 玩家2：计算机
@@ -310,7 +310,6 @@ def run_game(unused_argv):
                     response_json = response[response_json_start:response_json_end]
                     try:
                         parsed_commands, units_with_commands = parse_command(json.loads(response_json))
-                        print(parsed_commands)
                         for command_func, *args in parsed_commands:
                             print(f"Executing GPT command: {command_func.__name__} with args: {args}")
                             command_func(env, timestep, *args)
@@ -353,6 +352,7 @@ def run_game(unused_argv):
 
                 # 检查游戏是否结束
                 game_end = timestep.last()
+                print(f"Game End: {game_end}")
                 if game_end:
                     break
 
