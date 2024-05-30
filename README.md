@@ -21,8 +21,8 @@ python scripts/test.py
 ## 参数说明
 ```
 # GPT相关变量
-api_key_ = "sk-01e7u2gwWhhrLIVpFb1b8fC1126e414bAf74D1BeFf70C9D8" # 对应的账户token, 非必要不修改
-base_url_ = "https://api.bianxieai.com/v1"                       # 对应的中介API, 不修改
+api_key_ = "" # 对应的账户token, 非必要不修改
+base_url_ = "https://api.bianxieai.com/v1"                       # 对应的中介API, 不修改, 请联系有key的同学
 model_name_ = "gpt-3.5-turbo"                                    # 模型选择 (gpt-3.5-turbo, gpt-4, gpt-4o) 后面两个效果好，但是价格高，请谨慎使用
 
 # 仿真变量

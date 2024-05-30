@@ -14,7 +14,7 @@ _PLAYER_SELF = features.PlayerRelative.SELF
 _PLAYER_ENEMY = features.PlayerRelative.ENEMY
 
 # GPT相关变量
-api_key_ = "sk-01e7u2gwWhhrLIVpFb1b8fC1126e414bAf74D1BeFf70C9D8"
+api_key_ = ""
 base_url_ = "https://api.bianxieai.com/v1"
 model_name_ = "gpt-3.5-turbo"
 
