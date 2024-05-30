@@ -18,7 +18,7 @@ pip install -r requirements.txt
 ```
 python scripts/test.py
 ```
-## 参数说明
+## 参数说明(test.py)
 ```
 # GPT相关变量
 api_key_ = "" # 对应的账户token, 非必要不修改
