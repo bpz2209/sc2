@@ -1,4 +1,4 @@
-# 使用手册（推荐使用Anaconda3进行虚拟环境管理）
+# 使用手册（推荐使用Anaconda3进行虚拟环境管理 python >= 3.7）
 ## clone
 ```
 git clone https://github.com/bpz2209/sc2.git
