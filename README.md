@@ -4,6 +4,11 @@
 git clone https://github.com/bpz2209/sc2.git
 cd sc2
 ```
+## 配置StarCraftII
+```
+1. 下载星际2
+2. 进入对应的StarCraftII文件夹，将项目的两个地图复制到Maps/mini_games下面
+```
 ## 安装环境
 ```
 pip install pysc2/
