@@ -160,7 +160,6 @@ class COA_GPT:
         """
         
         return all_info
-
 def initialize_env():
     """初始化SC2环境"""
     return sc2_env.SC2Env(
