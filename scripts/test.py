@@ -14,12 +14,12 @@ _PLAYER_SELF = features.PlayerRelative.SELF
 _PLAYER_ENEMY = features.PlayerRelative.ENEMY
 
 # GPT相关变量
-api_key_ = ""
+api_key_ = "sk-Yuc5jDd8gGXai5Zp172e22Be5bE741E3B6D6F3Ea09B109E3"
 base_url_ = "https://api.bianxieai.com/v1"
-model_name_ = "gpt-3.5-turbo"
+model_name_ = "gpt-4o"
 
 # 仿真变量
-num_simulations_ = 3
+num_simulations_ = 1
 game_time_seconds_ = 100 / 1.42
 log_directory_ = "../logs"
 
@@ -57,6 +57,7 @@ class COA_GPT:
         self.log_directory = log_directory
         self.chat_log_file = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+'_'+self.model_name
         self.create_directory()
+        self.chat_history = []
 
     def create_directory(self):
         # 创建日志目录
@@ -69,17 +70,14 @@ class COA_GPT:
 
     def chat(self, context):
         start_time = time.time()  # 记录开始时间
+        self.chat_history.append({"role": "user", "content": context})
         completion = self.client.chat.completions.create(
             model=self.model_name,
-            messages=[
-                {
-                    "role": "user",
-                    "content": context,
-                }
-            ]
+            messages=self.chat_history
         )
         end_time = time.time()  # 记录结束时间
         response = completion.choices[0].message.content
+        self.chat_history.append({"role": "assistant", "content": response})
         elapsed_time = end_time - start_time  # 计算总的处理时间
         print(f"GPT response time: {elapsed_time:.4f} seconds")  # 保留四位小数
         print(response)
@@ -133,7 +131,12 @@ class COA_GPT:
         {additional_military_info}
         """
         return prompt
-
+    def human_feedback_1(self):
+        feedback = "Make sure both our aviation units directly engage the enemy aviation unit."
+        return feedback
+    def human_feedback_2(self):
+        feedback = "Make sure only our Scout unit is commanded to control Bridge Bobcat (x: 75 y: 26) and our other assets (not the aviation) are split into two groups and commanded to move towards both enemy artillery using the attack move command."
+        return feedback
     def generate_battlefield_info(self, units_on_screen):
         """生成战场信息准备输入GPT模型"""
         MISSION_OBJECTIVE_TIGERCLAW = "Move friendly forces from the west side of the river to the east via multiple bridges, destroy all hostile forces."
@@ -297,7 +300,14 @@ def run_game(unused_argv):
             response = coa_gpt.chat(system_prompt + info)
             print("在info下的回复：")
             print(response)
-
+            human_feedback_1 = coa_gpt.human_feedback_1()
+            response = coa_gpt.chat(human_feedback_1)
+            print("在human_feedback_1下的回复：")
+            print(response)
+            human_feedback_2 = coa_gpt.human_feedback_2()
+            response = coa_gpt.chat(human_feedback_2)
+            print("在human_feedback_2下的回复：")
+            print(response)
             # 获取所有友军单位的ID
             all_friendly_unit_ids = {unit.tag for unit in units_on_screen if unit.alliance == _PLAYER_SELF}
             while True:
@@ -362,7 +372,7 @@ def run_game(unused_argv):
                 print(f"Game Time: {game_time_seconds:.2f} seconds")
                 
                 if game_time_seconds >= game_time_seconds_:
-                    print("Game time has reached {game_time_seconds_} seconds. Ending simulation.")
+                    print(f"Game time has reached {game_time_seconds_} seconds. Ending simulation.")
                     break
                 
                 if game_end:
