@@ -22,7 +22,9 @@ model_name_ = "gpt-4o"
 num_simulations_ = 1
 game_time_seconds_ = 100 / 1.42
 log_directory_ = "../logs"
-
+MODE = 'realtime'
+PATH = '2022-03-23_15-00-00_gpt-4o'
+NUM_STEPS = 4
 # 定义映射关系
 unit_mapping = {
     "SiegeTank": "Armor",
@@ -138,11 +140,18 @@ class COA_GPT:
             }
         }
         """
-
+        # 附加军事信息
+        # 机动形式有包围、侧翼进攻、正面进攻、渗透、穿插和转移。指挥官使用这些机动形式来定位敌人，而不是地形。
+        # 四种主要的进攻任务是接触、进攻、利用和追击。虽然方便地谈论它们是不同的任务，但实际上它们很容易从一个任务流转到另一个任务。
+        # 有三种基本的防御任务——区域防御、机动防御和后撤。
+        # 如果血量比较低， 单位就进行撤退。
+        # Aviation能够对地面单位进行攻击，但是地面单位不能对Aviation进行攻击，可以利用这个特性。
         additional_military_info = """
         - The forms of maneuver are envelopment, flank attack, frontal attack, infiltration, penetration, and turning movement. Commanders use these forms of maneuver to orient on the enemy, not terrain.
         - The four primary offensive tasks are movement to contact, attack, exploitation, and pursuit. While it is convenient to talk of them as different tasks, in reality they flow readily from one to another.
         - There are three basic defensive tasks - area defense, mobile defense, and retrograde.
+        - Units retreat if their health is low.
+        - Aviation can attack ground units, but ground units cannot attack Aviation. This can be used to your advantage.
         """
         prompt = f"""
         You are a military commander assistant. Your users are military commanders and your role is to help them develop military courses of action (COA).
@@ -178,7 +187,8 @@ class COA_GPT:
             alliance = "Friendly" if unit.alliance == _PLAYER_SELF else "Hostile"
             unit_type = unit_mapping.get(sc2_unit_type_to_name.get(unit.unit_type, "Unknown"), "Unknown")
             position = {"x": unit.x, "y": unit.y}
-            raw_units_json.append({"unit_id": unit.tag, "unit_type": unit_type, "alliance": alliance, "position": position})
+            health = unit.health
+            raw_units_json.append({"unit_id": unit.tag, "unit_type": unit_type, "alliance": alliance, "position": position, "health": health})
         
         raw_units_str = ", ".join([str(unit) for unit in raw_units_json])
         all_info = f"""
@@ -275,33 +285,31 @@ def parse_command(command):
                 print(f"Failed to parse task: {task}")
     return parsed_commands, units_with_commands
 
-def get_command(coa_gpt, timestep, mode, log_path):
+def get_command(coa_gpt, timestep, mode):
     units_on_screen = print_units(timestep)
     info = coa_gpt.generate_battlefield_info(units_on_screen)
+    
     if mode == 'realtime':
-        system_prompt = coa_gpt.system_prompt()
-        response = coa_gpt.chat(system_prompt + info)
+        response = coa_gpt.chat(info)
         print("在info下的回复：")
-        print(response)
-        human_feedback_1 = coa_gpt.human_feedback_1()
-        response = coa_gpt.chat(human_feedback_1)
-        print("在human_feedback_1下的回复：")
-        print(response)
-        human_feedback_2 = coa_gpt.human_feedback_2()
-        response = coa_gpt.chat(human_feedback_2)
-        print("在human_feedback_2下的回复：")
         print(response)
         return response
     elif mode == 'sim':
-        coa_gpt.replay_conversation(log_path)
-        return answer
+        response = coa_gpt.chat()
+        print("在sim下的回复：")
+        print(response)
+        return response
 
 def run_game(unused_argv):
     # COA-GPT
-    coa_gpt = COA_GPT(api_key=api_key_, base_url=base_url_, model_name=model_name_, log_directory=log_directory_)
-
+    coa_gpt = COA_GPT(api_key=api_key_, base_url=base_url_, model_name=model_name_, log_directory=log_directory_, mode=MODE, path=PATH)
+    system_prompt = coa_gpt.system_prompt()
+    if coa_gpt.mode == 'realtime':
+        coa_gpt.chat(system_prompt)
     # 仿真次数
     num_simulations = num_simulations_
+    epoch = 0
+    num_steps = NUM_STEPS
     for sim in range(num_simulations):
         scores = []
         plt.ion()  # 开启交互模式
@@ -317,7 +325,6 @@ def run_game(unused_argv):
             timesteps = env.reset()
             timestep = timesteps[0]
             units_on_screen = print_units(timestep)
-            info = coa_gpt.generate_battlefield_info(units_on_screen)
             
             # 获取所有友军单位的ID
             all_friendly_unit_ids = {unit.tag for unit in units_on_screen if unit.alliance == _PLAYER_SELF}
@@ -327,21 +334,22 @@ def run_game(unused_argv):
 
                 if not units_on_screen:
                     break  # 没有友方单位，结束循环
-
-                # 执行解析后的命令
-                # 寻找response中的命令({}部分)
-                response_json_start = response.find("{")
-                response_json_end = response.rfind("}") + 1
-                if response_json_start != -1 and response_json_end != -1:
-                    response_json = response[response_json_start:response_json_end]
-                    try:
-                        parsed_commands, units_with_commands = parse_command(json.loads(response_json))
-                        for command_func, *args in parsed_commands:
-                            print(f"Executing GPT command: {command_func.__name__} with args: {args}")
-                            command_func(env, timestep, *args)
-                            timesteps = env.step([actions.RAW_FUNCTIONS.no_op()])
-                    except json.JSONDecodeError:
-                        print("Failed to parse JSON from GPT response.")
+                if epoch % num_steps == 0:
+                    response = get_command(coa_gpt, timestep, coa_gpt.mode)
+                    # 执行解析后的命令
+                    # 寻找response中的命令({}部分)
+                    response_json_start = response.find("{")
+                    response_json_end = response.rfind("}") + 1
+                    if response_json_start != -1 and response_json_end != -1:
+                        response_json = response[response_json_start:response_json_end]
+                        try:
+                            parsed_commands, units_with_commands = parse_command(json.loads(response_json))
+                            for command_func, *args in parsed_commands:
+                                print(f"Executing GPT command: {command_func.__name__} with args: {args}")
+                                command_func(env, timestep, *args)
+                                timesteps = env.step([actions.RAW_FUNCTIONS.no_op()])
+                        except json.JSONDecodeError:
+                            print("Failed to parse JSON from GPT response.")
                 
                 # 打印未接收到命令的单位
                 units_without_commands = all_friendly_unit_ids - units_with_commands
@@ -388,7 +396,8 @@ def run_game(unused_argv):
                 
                 if game_end:
                     break
-
+                
+                epoch += 1
         # 最后保存图表
         plt_path = os.path.join(coa_gpt.log_directory, coa_gpt.chat_log_file, f"simulation_{sim + 1}_scores.png")
         plt.savefig(plt_path)
