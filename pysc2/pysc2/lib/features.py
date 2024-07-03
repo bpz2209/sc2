@@ -473,7 +473,7 @@ class AgentInterfaceFormat(object):
       action_space=None,
       camera_width_world_units=None,
       use_feature_units=False,
-      use_raw_units=False,
+      use_raw_units=True,
       use_raw_actions=True,
       max_raw_actions=512,
       max_selected_units=30,

@@ -46,10 +46,11 @@ sc2_unit_type_to_name = {
 }
 
 class COA_GPT:
-    def __init__(self, api_key, base_url="https://api.bianxieai.com/v1", model_name="gpt-3.5-turbo", log_directory="logs"):
+    def __init__(self, api_key, base_url="https://api.bianxieai.com/v1", model_name="gpt-3.5-turbo", log_directory="logs", mode="realtime", path = ''):
         self.api_key = api_key
         self.base_url = base_url
         self.model_name = model_name
+        self.mode = mode
         self.client = OpenAI(
             api_key=self.api_key,
             base_url=self.base_url
@@ -58,6 +59,9 @@ class COA_GPT:
         self.chat_log_file = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+'_'+self.model_name
         self.create_directory()
         self.chat_history = []
+
+        if mode == 'sim':
+            self.replay_conversation(os.path.join(self.log_directory, path))
 
     def create_directory(self):
         # 创建日志目录
@@ -69,20 +73,33 @@ class COA_GPT:
             os.makedirs(log_path)
 
     def chat(self, context):
-        start_time = time.time()  # 记录开始时间
-        self.chat_history.append({"role": "user", "content": context})
-        completion = self.client.chat.completions.create(
-            model=self.model_name,
-            messages=self.chat_history
-        )
-        end_time = time.time()  # 记录结束时间
-        response = completion.choices[0].message.content
-        self.chat_history.append({"role": "assistant", "content": response})
-        elapsed_time = end_time - start_time  # 计算总的处理时间
-        print(f"GPT response time: {elapsed_time:.4f} seconds")  # 保留四位小数
-        print(response)
-        self.log_conversation(context, response, elapsed_time)
-        return response
+        if self.mode == 'realtime':
+            start_time = time.time()  # 记录开始时间
+            self.chat_history.append({"role": "user", "content": context})
+            completion = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=self.chat_history
+            )
+            end_time = time.time()  # 记录结束时间
+            response = completion.choices[0].message.content
+            self.chat_history.append({"role": "assistant", "content": response})
+            elapsed_time = end_time - start_time  # 计算总的处理时间
+            print(f"GPT response time: {elapsed_time:.4f} seconds")  # 保留四位小数
+            print(response)
+            self.log_conversation(context, response, elapsed_time)
+            return response
+        elif self.mode == 'sim':
+            # 找到第一个回复的assistant
+            for i in range(len(self.chat_history)):
+                if self.chat_history[i]['role'] == 'assistant':
+                    break
+            response = self.chat_history[i]['content']
+            # 删去第一个回复的assistant
+            self.chat_history = self.chat_history[i+1:]
+            return response
+
+
+            
 
     def log_conversation(self, question, answer, elapsed_time):
         log_path = os.path.join(self.log_directory, self.chat_log_file, "conversation.log")
@@ -90,7 +107,21 @@ class COA_GPT:
             file.write(f"Question:\n{question}\n")
             file.write(f"Answer:\n{answer}\n")
             file.write(f"Response time: {elapsed_time:.4f} seconds\n\n")  # 保留四位小数
-
+    # 读取对话文件并进行复现
+    def replay_conversation(self, log_path):
+        question = []
+        answer = []
+        with open(log_path, "r") as file:
+            lines = file.readlines()
+            for line in lines:
+                if line.startswith("Question:"):
+                    question.append(line.replace("Question:", "").strip())
+                elif line.startswith("Answer:"):
+                    answer.append(line.replace("Answer:", "").strip())
+        for q, a in zip(question, answer):
+            self.chat_history.append({"role": "user", "content": q})
+            self.chat_history.append({"role": "assistant", "content": a})
+        
     def system_prompt(self):
         example_coa_statement = """
         {
@@ -170,7 +201,8 @@ def initialize_env():
         ],
         agent_interface_format=features.AgentInterfaceFormat(
             feature_dimensions=features.Dimensions(screen=84, minimap=64),
-            use_raw_units=True
+            use_raw_units=True,
+            use_raw_actions=True
         ),
         step_mul=1,  # 将步长增加到1，以降低游戏速度
         game_steps_per_episode=0,
@@ -243,6 +275,27 @@ def parse_command(command):
                 print(f"Failed to parse task: {task}")
     return parsed_commands, units_with_commands
 
+def get_command(coa_gpt, timestep, mode, log_path):
+    units_on_screen = print_units(timestep)
+    info = coa_gpt.generate_battlefield_info(units_on_screen)
+    if mode == 'realtime':
+        system_prompt = coa_gpt.system_prompt()
+        response = coa_gpt.chat(system_prompt + info)
+        print("在info下的回复：")
+        print(response)
+        human_feedback_1 = coa_gpt.human_feedback_1()
+        response = coa_gpt.chat(human_feedback_1)
+        print("在human_feedback_1下的回复：")
+        print(response)
+        human_feedback_2 = coa_gpt.human_feedback_2()
+        response = coa_gpt.chat(human_feedback_2)
+        print("在human_feedback_2下的回复：")
+        print(response)
+        return response
+    elif mode == 'sim':
+        coa_gpt.replay_conversation(log_path)
+        return answer
+
 def run_game(unused_argv):
     # COA-GPT
     coa_gpt = COA_GPT(api_key=api_key_, base_url=base_url_, model_name=model_name_, log_directory=log_directory_)
@@ -259,54 +312,13 @@ def run_game(unused_argv):
         ax.set_title(f'Score Over Time - Simulation {sim + 1}')
 
         print(f"Starting simulation {sim + 1} of {num_simulations}")
-        command_json = """
-        {
-        "coa_id_0": {
-            "overview": "The objective of this COA is to conduct a frontal attack on the enemy forces. This COA is feasible as the friendly units have sufficient firepower and can engage the hostiles effectively. It is acceptable as the cost and risk are balanced with the advantage gained. It is suitable as it directly aligns with the mission objective. It is distinguishable as it differs significantly from the other COAs.",
-            "name": "Frontal Attack",
-            "task_allocation": [
-                {"unit_id": 4295229441, "unit_type": "Mechanized infantry", "alliance": "Friendly", "position": {"x": 14.0, "y": 219.0}, "command": "attack_move_unit(4295229441, 80.0, 219.0)"},
-                {"unit_id": 4299948033, "unit_type": "Aviation", "alliance": "Friendly", "position": {"x": 10.0, "y": 114.0}, "command": "engage_target_unit(4295229441, 3355229433, 80.0, 219.0)"}
-            ]
-        },
-        "coa_id_1": {
-            "overview": "The objective of this COA is to conduct a flank attack on the enemy forces. This COA is feasible as the friendly units can maneuver to the enemy's weak flank. It is acceptable as the cost and risk are balanced with the advantage gained. It is suitable as it directly aligns with the mission objective. It is distinguishable as it differs significantly from the other COAs.",
-            "name": "Flank Attack",
-            "task_allocation": [
-                {"unit_id": 4295229441, "unit_type": "Mechanized infantry", "alliance": "Friendly", "position": {"x": 14.0, "y": 219.0}, "command": "attack_move_unit(4295229441, 60.0, 170.0)"},
-                {"unit_id": 4299948033, "unit_type": "Aviation", "alliance": "Friendly", "position": {"x": 10.0, "y": 114.0}, "command": "engage_target_unit(4295229441, 3355229433, 60.0, 170.0)"}
-            ]
-        },
-        "coa_id_2": {
-            "overview": "The objective of this COA is to conduct a infiltration maneuver to surprise the enemy forces from behind. This COA is feasible as the terrain allows for covert movements of friendly units. It is acceptable as the cost and risk are balanced with the advantage gained. It is suitable as it directly aligns with the mission objective. It is distinguishable as it differs significantly from the other COAs.",
-            "name": "Infiltration Maneuver",
-            "task_allocation": [
-                {"unit_id": 4295229441, "unit_type": "Mechanized infantry", "alliance": "Friendly", "position": {"x": 14.0, "y": 219.0}, "command": "attack_move_unit(4295229441, 150.0, 10.0)"},
-                {"unit_id": 4299948033, "unit_type": "Aviation", "alliance": "Friendly", "position": {"x": 10.0, "y": 114.0}, "command": "engage_target_unit(4295229441, 3355229433, 150.0, 10.0)"}
-            ]
-        }
-    }
-        """
-        command = json.loads(command_json)
-        parsed_commands, units_with_commands = parse_command(command)
 
         with initialize_env() as env:
             timesteps = env.reset()
             timestep = timesteps[0]
             units_on_screen = print_units(timestep)
             info = coa_gpt.generate_battlefield_info(units_on_screen)
-            system_prompt = coa_gpt.system_prompt()
-            response = coa_gpt.chat(system_prompt + info)
-            print("在info下的回复：")
-            print(response)
-            human_feedback_1 = coa_gpt.human_feedback_1()
-            response = coa_gpt.chat(human_feedback_1)
-            print("在human_feedback_1下的回复：")
-            print(response)
-            human_feedback_2 = coa_gpt.human_feedback_2()
-            response = coa_gpt.chat(human_feedback_2)
-            print("在human_feedback_2下的回复：")
-            print(response)
+            
             # 获取所有友军单位的ID
             all_friendly_unit_ids = {unit.tag for unit in units_on_screen if unit.alliance == _PLAYER_SELF}
             while True:
